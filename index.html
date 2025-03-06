@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Davlatlar Poytaxti O‘yini</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #1e3a8a, #9333ea);
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center h-screen flex-col text-center">
+    <div id="game" class="text-center">
+        <h1 class="text-3xl font-bold mb-4">🌍 Davlatlar Poytaxti O‘yini 🏛️</h1>
+        <button id="startBtn" class="bg-green-500 px-6 py-3 rounded-full text-white text-lg shadow-lg hover:bg-green-700">Boshlash ▶️</button>
+    </div>
+    
+    <div id="quiz" class="hidden card w-96 text-center p-6">
+        <h2 id="question" class="text-2xl mb-4"></h2>
+        <div id="options" class="grid grid-cols-2 gap-4"></div>
+    </div>
+    
+    <div id="result" class="hidden card w-80 text-center p-6">
+        <h2 id="scoreText" class="text-2xl font-bold"></h2>
+        <button id="restartBtn" class="mt-4 bg-blue-500 px-4 py-2 rounded-full text-white hover:bg-blue-700">🔄 Qayta O‘ynash</button>
+    </div>
+
+    <div class="mt-6 flex space-x-4">
+        <a href="https://t.me/webstormers" target="_blank" class="bg-blue-500 px-4 py-2 rounded-full text-white hover:bg-blue-700">📢 Telegram Kanal</a>
+        <a href="https://t.me/webstor_admin" target="_blank" class="px-4 py-2 bg-red-500 text-white rounded-lg">✉️ Admin bilan bog'lanish</a>
+
+    </div>
+
+    <script>
+        const countries = [
+            { country: "Afg'oniston", capital: "Kobul" },
+            { country: "Albaniya", capital: "Tirana" },
+            { country: "Jazoir", capital: "Aljer" },
+            { country: "Andorra", capital: "Andorra la Vella" },
+            { country: "Angola", capital: "Luanda" },
+            { country: "Antigua va Barbuda", capital: "Sent-Jons" },
+            { country: "Argentina", capital: "Buenos-Ayres" },
+            { country: "Armaniston", capital: "Yerevan" },
+            { country: "Avstraliya", capital: "Kanberra" },
+            { country: "Avstriya", capital: "Vena" },
+            { country: "Ozarbayjon", capital: "Boku" },
+            { country: "Bagama orollari", capital: "Nassau" },
+            { country: "Bahrayn", capital: "Manama" },
+            { country: "Bangladesh", capital: "Dakka" },
+            { country: "Barbados", capital: "Bridjtaun" },
+            { country: "Belarus", capital: "Minsk" },
+            { country: "Belgiya", capital: "Bryussel" },
+            { country: "Beliz", capital: "Belmopan" },
+            { country: "Benin", capital: "Porto-Novo" },
+            { country: "Butan", capital: "Timpu" }, // TO‘G‘RILANDI
+            { country: "Boliviya", capital: "Sukre" },
+            { country: "Bosniya va Gertsegovina", capital: "Sarayevo" },
+            { country: "Botsvana", capital: "Gaborone" },
+            { country: "Braziliya", capital: "Braziliya shahri" }, // TO‘G‘RILANDI
+            { country: "Bruney", capital: "Bandar-Seri-Begavan" },
+            { country: "Bolgariya", capital: "Sofiya" },
+            { country: "Burkina-Faso", capital: "Uagadugu" },
+            { country: "Burundi", capital: "Gitega" },
+            { country: "Kabo-Verde", capital: "Praia" },
+            { country: "Kambodja", capital: "Pnompen" },
+            { country: "Kamerun", capital: "Yaunde" },
+            { country: "Kanada", capital: "Ottava" },
+            { country: "Markaziy Afrika Respublikasi", capital: "Bangi" },
+            { country: "Chad", capital: "N'Jamena" },
+            { country: "Chili", capital: "Santyago" },
+            { country: "Xitoy", capital: "Pekin" },
+            { country: "Kolumbiya", capital: "Bogota" },
+            { country: "Komor orollari", capital: "Moroni" },
+            { country: "Kongo Respublikasi", capital: "Brazavil" },
+            { country: "Kosta-Rika", capital: "San-Xose" },
+            { country: "Xorvatiya", capital: "Zagreb" },
+            { country: "Kuba", capital: "Gavana" },
+            { country: "Kipr", capital: "Nikosiya" },
+            { country: "Chexiya", capital: "Praga" },
+            { country: "Kongo Demokratik Respublikasi", capital: "Kinshasa" },
+            { country: "Daniya", capital: "Kopengagen" },
+            { country: "Jibuti", capital: "Jibuti" },
+            { country: "Dominika", capital: "Roseau" },
+            { country: "Dominikan Respublikasi", capital: "Santo-Domingo" },
+            { country: "Ekvador", capital: "Kito" },
+            { country: "Misr", capital: "Qohira" },
+            { country: "Salvador", capital: "San-Salvador" },
+            { country: "Ekvatorial Gvineya", capital: "Malabo" },
+            { country: "Eritreya", capital: "Asmara" },
+            { country: "Estoniya", capital: "Tallin" },
+            { country: "Efiopiya", capital: "Addis-Abeba" },
+            { country: "Fiji", capital: "Suva" },
+            { country: "Finlandiya", capital: "Xelsinki" },
+            { country: "Fransiya", capital: "Parij" },
+            { country: "Gabon", capital: "Librevil" },
+            { country: "Gambiya", capital: "Banjul" },
+            { country: "Gruziya", capital: "Tbilisi" },
+            { country: "Germaniya", capital: "Berlin" },
+            { country: "Gana", capital: "Akra" },
+            { country: "Gretsiya", capital: "Afina" },
+            { country: "Gvatemala", capital: "Gvatemala" },
+            { country: "Gvineya", capital: "Konakri" },
+            { country: "Gvineya-Bisau", capital: "Bisau" },
+            { country: "Guyana", capital: "Jorjtaun" },
+            { country: "Gaiti", capital: "Port-o-Prens" },
+            { country: "Honduras", capital: "Tegusigalpa" }, // TO‘G‘RILANDI
+            { country: "Vengriya", capital: "Budapesht" },
+            { country: "Islandiya", capital: "Reykjavik" },
+            { country: "Hindiston", capital: "Yangi Dehli" },
+            { country: "Indoneziya", capital: "Jakarta" },
+            { country: "Eron", capital: "Tehran" },
+            { country: "Iroq", capital: "Bag'dod" },
+            { country: "Irlandiya", capital: "Dublin" },
+            { country: "Isroil", capital: "Quddus" },
+            { country: "Italiya", capital: "Rim" },
+            { country: "O‘zbekiston", capital: "Toshkent" },
+            { country: "Rossiya", capital: "Moskva" },
+            { country: "AQSh", capital: "Vashington" },
+            { country: "Buyuk Britaniya", capital: "London" },
+            { country: "Qozog'iston", capital: "Astana" }, 
+            { country: "Qirg'iziston", capital: "Bishkek" },
+
+
+        ];
+
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        
+        const startBtn = document.getElementById("startBtn");
+        const quizDiv = document.getElementById("quiz");
+        const gameDiv = document.getElementById("game");
+        const resultDiv = document.getElementById("result");
+        const questionEl = document.getElementById("question");
+        const optionsEl = document.getElementById("options");
+        const restartBtn = document.getElementById("restartBtn");
+        const scoreText = document.getElementById("scoreText");
+
+        function startGame() {
+            gameDiv.classList.add("hidden");
+            quizDiv.classList.remove("hidden");
+            correctAnswers = 0;
+            currentQuestionIndex = 0;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const questionData = countries[currentQuestionIndex];
+            questionEl.textContent = `"${questionData.country}" davlatining poytaxti qaysi?`;
+            
+            let options = [...countries.map(c => c.capital)];
+            options = options.sort(() => Math.random() - 0.5).slice(0, 3);
+            if (!options.includes(questionData.capital)) {
+                options[Math.floor(Math.random() * options.length)] = questionData.capital;
+            }
+            
+            options = options.sort(() => Math.random() - 0.5);
+            optionsEl.innerHTML = "";
+            options.forEach(option => {
+                const btn = document.createElement("button");
+                btn.textContent = option;
+                btn.className = "bg-gray-700 px-4 py-2 rounded text-white hover:bg-gray-900";
+                btn.onclick = () => checkAnswer(option, questionData.capital);
+                optionsEl.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected, correct) {
+            if (selected === correct) {
+                correctAnswers++;
+                if (currentQuestionIndex < countries.length - 1) {
+                    currentQuestionIndex++;
+                    showQuestion();
+                } else {
+                    endGame();
+                }
+            } else {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            quizDiv.classList.add("hidden");
+            resultDiv.classList.remove("hidden");
+            scoreText.textContent = `🎯 Siz ${correctAnswers} ta to‘g‘ri javob topdingiz!`;
+        }
+
+        function restartGame() {
+            resultDiv.classList.add("hidden");
+            gameDiv.classList.remove("hidden");
+        }
+
+        startBtn.addEventListener("click", startGame);
+        restartBtn.addEventListener("click", restartGame);
+    </script>
+</body>
+</html>
